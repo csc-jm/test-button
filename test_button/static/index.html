@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>This is a web app for testing.</p>
+<p>Below button will print the current version:</p>
+
+<button onclick="show()">Version</button>
+
+<p id="version" style="display:none" >{{ version }}</p>
+
+<script>
+function show() {
+  document.getElementById("version").style.display = "block";
+}
+</script>
+
+</body>
+</html>

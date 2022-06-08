@@ -1,0 +1,9 @@
+version: '3.2'
+
+services:
+  test-button:
+    hostname: test-button
+    image: localhost:5000/test-button
+    ports:
+      - 5430:5430
+    restart: on-failure
