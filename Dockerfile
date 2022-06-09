@@ -17,7 +17,7 @@ FROM python:3.8-alpine3.13
 
 RUN apk add --no-cache --update bash
 
-LABEL maintainer "blankdots"
+LABEL maintainer "csc-jm"
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.vcs-url="https://github.com/csc-jm/test-button"
 
