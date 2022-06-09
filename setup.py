@@ -25,9 +25,7 @@ setup(
     # Required
     packages=find_packages(exclude=["tests"]),
     install_requires=requirements,
-    package_data={
-        "": ["static/*"]
-    },
+    package_data={"": ["static/*"]},
     include_pacakage_data=True,
     extras_require={"test": ["coverage", "pytest", "pytest-cov", "coveralls", "tox"]},  # Optional
     entry_points={  # Optional
