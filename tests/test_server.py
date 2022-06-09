@@ -4,6 +4,7 @@ from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from aiohttp import web
 from test_button.server import init, main
 from unittest import mock
+from test_button import __version__
 
 
 class AppTestCase(AioHTTPTestCase):
@@ -18,10 +19,17 @@ class AppTestCase(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_health(self) -> None:
-        """Simplest test the health endpoint."""
+        """Test the health endpoint."""
         resp = await self.client.request("GET", "/health")
         assert 200 == resp.status
         assert "OK" == await resp.text()
+
+    @unittest_run_loop
+    async def test_index(self) -> None:
+        """Test that current version is in index."""
+        resp = await self.client.request("GET", "/")
+        assert 200 == resp.status
+        assert __version__ in await resp.text()
 
 
 class TestBasicFunctionsApp(unittest.TestCase):
