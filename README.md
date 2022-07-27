@@ -7,11 +7,11 @@ A test web application built with [aiohttp](http://aiohttp.readthedocs.io/) on P
 Installation can be done:
 * Github - without cloning
 ```
-$ pip install git+url
+$ pip install git+https://github.com/csc-jm/test-button.git
 ```
 * cloning repository:
 ```
-$ git clone git@ssh_url
+$ git clone git@github.com:csc-jm/test-button.git
 $ cd test-button
 $ pip install .
 ```
