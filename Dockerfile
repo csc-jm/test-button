@@ -1,4 +1,4 @@
-FROM python:3.8-alpine3.15 as BUILD
+FROM python:3.10.5-alpine3.15 as BUILD
 
 RUN apk add --update \
     && apk add --no-cache build-base curl-dev linux-headers bash git musl-dev\
@@ -13,7 +13,7 @@ RUN pip install --upgrade pip && \
     pip install -r /root/test-button/requirements.txt && \
     pip install /root/test-button
 
-FROM python:3.10.0-alpine3.13
+FROM python:3.10.5-alpine3.15
 
 RUN apk add --no-cache --update bash
 
