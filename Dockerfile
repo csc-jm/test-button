@@ -16,6 +16,7 @@ RUN pip install --upgrade pip && \
 FROM python:3.8-alpine3.15
 
 RUN apk add --no-cache --update bash
+RUN apk add iputils
 
 LABEL maintainer "csc-jm"
 LABEL org.label-schema.schema-version="1.0"
