@@ -39,7 +39,7 @@ env:
 
   # 🖊️ EDIT to change the image registry settings.
   # Registries such as GHCR, Quay.io, and Docker Hub are supported.
-  IMAGE_REGISTRY: index.docker.io/${{ secrets.DOCKER_USERNAME }}
+  IMAGE_REGISTRY: https://index.docker.io/${{ secrets.DOCKER_USERNAME }}
   IMAGE_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
