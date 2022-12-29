@@ -182,7 +182,7 @@ jobs:
         image: ${{ steps.push-image.outputs.registry-path }}
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
-        create_pull_secret_from: docker
+        image_pull_secret_name: regcred
 
     - name: Print application URL
       env:
