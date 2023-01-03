@@ -30,7 +30,7 @@ env:
   OPENSHIFT_NAMESPACE: ""
 
   # 🖊️ EDIT to set a name for your OpenShift app, or a default one will be generated below.
-  APP_NAME: "test-button-app"
+  APP_NAME: "test-button"
 
   # 🖊️ EDIT with the port your application should be accessible on.
   # If the container image exposes *exactly one* port, this can be left blank.
@@ -147,7 +147,7 @@ jobs:
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: "test-button"
+        image: ${{ env.APP_NAME }}
         tags: ${{ env.IMAGE_TAGS }}
         extra-args: |
           --storage-opt=overlay.mount_program=
@@ -191,9 +191,9 @@ jobs:
       id: deploy-and-expose
       uses: redhat-actions/oc-new-app@v1
       with:
-        app_name: ${{ env.APP_NAME }}
+        app_name: ${{ env.APP_NAME }}-app
         registry_hostname: docker.io
-        image: ${{ env.IMAGE_REGISTRY_USER }}/test-button:${{ env.BRANCH_NAME }} # ${{ steps.push-image.outputs.registry-path }}
+        image: ${{ steps.build-image.outputs.image }} # ${{ steps.push-image.outputs.registry-path }}
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
         image_pull_secret_name: regcred
