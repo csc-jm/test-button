@@ -30,7 +30,7 @@ env:
   OPENSHIFT_NAMESPACE: ""
 
   # 🖊️ EDIT to set a name for your OpenShift app, or a default one will be generated below.
-  APP_NAME: "test-button"
+  APP_NAME: "test-button-app"
 
   # 🖊️ EDIT with the port your application should be accessible on.
   # If the container image exposes *exactly one* port, this can be left blank.
@@ -78,6 +78,18 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
+    - name: Determine branch name (on push)
+      id: name-on-push
+      if: github.event_name == 'push'
+      run: |
+        echo "BRANCH_NAME=$(echo '${{ github.ref_name }}' | sed -e 's/\//-/g')" >> $GITHUB_ENV
+    
+    - name: Determine branch name (on delete)
+      id: name-on-delete
+      if: github.event_name == 'delete'
+      run: |
+        echo "BRANCH_NAME=$(echo '${{ github.event.ref }}' | sed -e 's/\//-/g')" >> $GITHUB_ENV
+    
     - name: Check for required secrets
       uses: actions/github-script@v6
       with:
@@ -127,7 +139,8 @@ jobs:
     - name: Determine image tags
       if: env.IMAGE_TAGS == ''
       run: |
-        echo "IMAGE_TAGS=latest ${GITHUB_SHA::12}" | tee -a $GITHUB_ENV
+        echo "IMAGE_TAGS=BRANCH_NAME" | tee -a $GITHUB_ENV
+      # echo "IMAGE_TAGS=latest ${GITHUB_SHA::12}" | tee -a $GITHUB_ENV
 
     # https://github.com/redhat-actions/buildah-build#readme
     - name: Build from Dockerfile
@@ -180,7 +193,7 @@ jobs:
       with:
         app_name: ${{ env.APP_NAME }}
         registry_hostname: docker.io
-        image: test-button/test-button-app:latest # originally ${{ steps.push-image.outputs.registry-path }}
+        image: ${{ steps.push-image.outputs.registry-path }}
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
         image_pull_secret_name: regcred
