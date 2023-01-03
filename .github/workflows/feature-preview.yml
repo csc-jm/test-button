@@ -193,7 +193,7 @@ jobs:
       with:
         app_name: ${{ env.APP_NAME }}-app
         registry_hostname: docker.io
-        image: test-button:master
+        image: test-button/test-button:latest
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
 
