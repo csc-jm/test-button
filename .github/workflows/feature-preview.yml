@@ -195,7 +195,7 @@ jobs:
         registry_hostname: docker.io
         registry_username: ${{ env.IMAGE_REGISTRY_USER }}
         registry_password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-        image: test-button:master # ${{ steps.push-image.outputs.registry-path }}
+        image: ${{ steps.push-image.outputs.digest }}
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
 
