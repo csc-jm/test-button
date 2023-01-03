@@ -193,9 +193,7 @@ jobs:
       with:
         app_name: ${{ env.APP_NAME }}-app
         registry_hostname: docker.io
-        registry_username: ${{ env.IMAGE_REGISTRY_USER }}
-        registry_password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-        image: ${{ steps.push-image.outputs.digest }}
+        image: test-button:master
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
         port: ${{ env.APP_PORT }}
 
