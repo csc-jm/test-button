@@ -207,7 +207,6 @@ jobs:
     if: ${{ github.event.action }} == 'delete'
     name: Remove the branch preview from Rahti
     runs-on: ubuntu-20.04
-    environment: production
     steps:
       - name: Determine branch name (on delete)
         if: github.event_name == 'delete'
@@ -218,6 +217,15 @@ jobs:
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: 4
+
+      # https://github.com/redhat-actions/oc-login#readme
+      - name: Log in to OpenShift
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+          openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+          insecure_skip_tls_verify: true
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
       - name: Delete app
         run: |
