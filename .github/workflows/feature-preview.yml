@@ -193,7 +193,7 @@ jobs:
         echo "Checking for old deployments and deleting if found..."
         oc delete all --selector=app=${{ env.BRANCH_NAME }}
         echo "Creating Deployment from image of the application..."
-        oc new-app --name=test-button --labels=app=${{ env.BRANCH_NAME }} cscjm/test-button:branch
+        oc new-app --name=test-button --labels=app=${{ env.BRANCH_NAME }} cscjm/test-button:${{ env.BRANCH_NAME }}
         echo "Creating Service for the application..."
         oc create service clusterip ${{ env.BRANCH_NAME }} --tcp=8081:5430
         echo "Exposing the route for the service of this branch..."
