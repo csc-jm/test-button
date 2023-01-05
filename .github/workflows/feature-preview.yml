@@ -202,8 +202,8 @@ jobs:
         oc annotate route ${{ env.BRANCH_NAME }} kubernetes.io/tls-acme='true'
         echo "Verifying if deployment is created successfully..."
         oc get all --selector=app=${{ env.BRANCH_NAME }}
-        echo "ROUTE=${{ env.BRANCH_NAME }}.test-button.rahtiapp.fi" | tee -a $GITHUB_ENV
-        echo "SELECTOR=${{ env.BRANCH_NAME }}" | tee -a $GITHUB_ENV
+        echo "ROUTE=https://${{ env.BRANCH_NAME }}.test-button.rahtiapp.fi" >> $GITHUB_OUTPUT
+        echo "SELECTOR=${{ env.BRANCH_NAME }}" >> $GITHUB_OUTPUT
 
     - name: Print application URL
       env:
