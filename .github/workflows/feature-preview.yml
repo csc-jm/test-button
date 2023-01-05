@@ -185,17 +185,25 @@ jobs:
         insecure_skip_tls_verify: true
         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
-    # This step should create a deployment, service, and route to run your app and expose it to the internet.
-    # https://github.com/redhat-actions/oc-new-app#readme
+    # Deployment could be made by using https://github.com/redhat-actions/oc-new-app#readme
+    # Here is a modified method of deploying and exposing the app to the internet
     - name: Create and expose app
       id: deploy-and-expose
-      uses: redhat-actions/oc-new-app@v1
-      with:
-        app_name: test-button-app # ${{ env.APP_NAME }}
-        registry_hostname: docker.io
-        image: cscjm/test-button:latest
-        namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-        port: 8081:5430
+      run: |
+        echo "Checking for old deployments and deleting if found..."
+        oc delete all --selector=app=${{ env.BRANCH_NAME }}
+        echo "Creating Deployment from image of the application..."
+        oc new-app --name=test-button --labels=app=${{ env.BRANCH_NAME }} cscjm/test-button:branch
+        echo "Creating Service for the application..."
+        oc create service clusterip ${{ env.BRANCH_NAME }} --tcp=8081:5430
+        echo "Exposing the route for the service of this branch..."
+        oc expose service ${{ env.BRANCH_NAME }} --hostname ${{ env.BRANCH_NAME }}.test-button.rahtiapp.fi
+        echo "Annotate route with existing Let's Encrypt certificate..."
+        oc annotate route ${{ env.BRANCH_NAME }} kubernetes.io/tls-acme='true'
+        echo "Verifying if deployment is created successfully..."
+        oc get all --selector=app=${{ env.BRANCH_NAME }}
+        echo "ROUTE=${{ env.BRANCH_NAME }}.test-button.rahtiapp.fi" | tee -a $GITHUB_ENV
+        echo "SELECTOR=${{ env.BRANCH_NAME }}" | tee -a $GITHUB_ENV
 
     - name: Print application URL
       env:
