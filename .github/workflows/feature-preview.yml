@@ -60,7 +60,7 @@ jobs:
   create-deployment:
     # 🖊️ Uncomment this if you are using CRDA scan step above
     # needs: crda-scan
-    if: ${{ github.event.action }} == 'push'
+    if: github.event_name == 'push'
     name: Build and deploy to Rahti via OpenShift
     runs-on: ubuntu-20.04
     environment: production
@@ -204,7 +204,7 @@ jobs:
         echo "Your app can be taken down with: \"oc delete all --selector='${{ env.SELECTOR }}'\""
 
   delete-deployment:
-    if: ${{ github.event.action }} == 'delete'
+    if: github.event_name == 'delete'
     name: Remove the branch preview from Rahti
     runs-on: ubuntu-20.04
     steps:
