@@ -203,6 +203,18 @@ jobs:
         echo
         echo "Your app can be taken down with: \"oc delete all --selector='${{ env.SELECTOR }}'\""
 
+    - name: Notify Preview Deploy Complete
+      env:
+        ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
+      run: |
+        curl \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/vnd.github.ant-man-preview+json" \
+          -H "Authorization: token ${{ github.token }}" \
+          "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.deployment_id }}/statuses" \
+          -d '{ "state": "success", "environment_url": "${{ env.ROUTE }}", "environment": "preview" }'
+
   delete-deployment:
     if: github.event_name == 'delete'
     name: Remove the branch preview from Rahti
