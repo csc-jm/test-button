@@ -2,33 +2,28 @@
 # - Checkout your repository
 # - Perform a container image build
 # - Push the built image to container registry
-# - Log in to your OpenShift cluster
+# - Log in to OpenShift cluster
 # - Create an OpenShift app from the image and expose it to the internet
+# - Remove the deployment upon deletion of the branch
 
 name: Feature Preview
 
 env:
-  # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
+  # To get a permanent token: https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  # Blank namespace in case of Rahti
   OPENSHIFT_NAMESPACE: ""
 
-  # 🖊️ EDIT to set a name for your OpenShift app, or a default one will be generated below.
   APP_NAME: "test-button"
 
-  # 🖊️ EDIT with the port your application should be accessible on.
-  # If the container image exposes *exactly one* port, this can be left blank.
   # Refer to the 'port' input of https://github.com/redhat-actions/oc-new-app
   APP_PORT: ""
 
-  # 🖊️ EDIT to change the image registry settings.
-  # Registries such as GHCR, Quay.io, and Docker Hub are supported.
   IMAGE_REGISTRY: index.docker.io/${{ secrets.DOCKER_USERNAME }}
   IMAGE_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
   IMAGE_TAGS: ""
 
 on:
@@ -70,6 +65,13 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
+    - name: Setup deployment
+      id: setup-deployment
+      uses: chrnorm/deployment-action@releases/v1
+      with:
+        token: "${{ github.token }}"
+        status: pending
+
     - name: Determine branch name
       if: github.event_name == 'push'
       run: |
@@ -205,6 +207,7 @@ jobs:
 
     - name: Notify Preview Deploy Complete
       env:
+        DEPLOYMENT_ID: ${{ steps.setup-deployment.outputs.deployment_id }}
         ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       run: |
         curl \
@@ -212,7 +215,7 @@ jobs:
           -H "Content-Type: application/json" \
           -H "Accept: application/vnd.github.ant-man-preview+json" \
           -H "Authorization: token ${{ github.token }}" \
-          "https://api.github.com/repos/${{ github.repository }}/deployments/${{ github.deployment_id }}/statuses" \
+          "https://api.github.com/repos/${{ github.repository }}/deployments/${{ env.DEPLOYMENT_ID }}/statuses" \
           -d '{ "state": "success", "environment_url": "${{ env.ROUTE }}", "environment": "preview" }'
 
   delete-deployment:
