@@ -2,4 +2,4 @@
 
 __title__ = "test-button"
 __author__ = "csc-jm"
-__version__ = "v0.1"
+__version__ = "v0.2"
