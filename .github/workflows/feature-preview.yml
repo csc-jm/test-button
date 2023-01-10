@@ -65,13 +65,6 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
-    - name: Setup deployment
-      id: setup-deployment
-      uses: chrnorm/deployment-action@releases/v1
-      with:
-        token: "${{ github.token }}"
-        status: pending
-
     - name: Determine branch name
       if: github.event_name == 'push'
       run: |
@@ -205,18 +198,15 @@ jobs:
         echo
         echo "Your app can be taken down with: \"oc delete all --selector='${{ env.SELECTOR }}'\""
 
-    - name: Notify Preview Deploy Complete
+    - name: Create GitHub deployment
+      id: deployment
+      uses: chrnorm/deployment-action@v2
       env:
-        DEPLOYMENT_ID: ${{ steps.setup-deployment.outputs.deployment_id }}
         ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-      run: |
-        curl \
-          -X POST \
-          -H "Content-Type: application/json" \
-          -H "Accept: application/vnd.github.ant-man-preview+json" \
-          -H "Authorization: token ${{ github.token }}" \
-          "https://api.github.com/repos/${{ github.repository }}/deployments/${{ env.DEPLOYMENT_ID }}/statuses" \
-          -d '{ "state": "success", "environment_url": "${{ env.ROUTE }}", "environment": "preview" }'
+      with:
+        token: '${{ github.token }}'
+        environment-url: ${{ env.ROUTE }}
+        environment: preview
 
   delete-deployment:
     if: github.event_name == 'delete'
