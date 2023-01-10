@@ -207,18 +207,22 @@ jobs:
     - name: Update deployment status (success)
       if: success()
       uses: chrnorm/deployment-status@v2
+      env:
+        ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       with:
         token: '${{ github.token }}'
-        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        environment-url: ${{ env.ROUTE }}
         deployment-id: ${{ steps.deployment.outputs.deployment_id }}
         state: 'success'
 
     - name: Update deployment status (failure)
       if: failure()
       uses: chrnorm/deployment-status@v2
+      env:
+        ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       with:
         token: '${{ github.token }}'
-        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        environment-url: ${{ env.ROUTE }}
         deployment-id: ${{ steps.deployment.outputs.deployment_id }}
         state: 'failure'
 
