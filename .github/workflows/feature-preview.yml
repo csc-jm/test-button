@@ -64,12 +64,12 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
-    - uses: chrnorm/deployment-action@v2
-        name: Start GitHub deployment
-        id: deployment
-        with:
-          token: '${{ github.token }}'
-          environment: preview
+    - name: Start GitHub deployment
+      id: deployment
+      uses: chrnorm/deployment-action@v2
+      with:
+        token: '${{ github.token }}'
+        environment: preview
 
     - name: Determine branch name
       if: github.event_name == 'push'
