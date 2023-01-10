@@ -58,13 +58,19 @@ jobs:
     if: github.event_name == 'push'
     name: Build and deploy to Rahti via OpenShift
     runs-on: ubuntu-20.04
-    environment: production
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
+    - uses: chrnorm/deployment-action@v2
+        name: Start GitHub deployment
+        id: deployment
+        with:
+          token: '${{ github.token }}'
+          environment: preview
+
     - name: Determine branch name
       if: github.event_name == 'push'
       run: |
@@ -198,15 +204,24 @@ jobs:
         echo
         echo "Your app can be taken down with: \"oc delete all --selector='${{ env.SELECTOR }}'\""
 
-    - name: Create GitHub deployment
-      id: deployment
-      uses: chrnorm/deployment-action@v2
-      env:
-        ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@v2
       with:
         token: '${{ github.token }}'
-        environment-url: ${{ env.ROUTE }}
-        environment: preview
+        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: 'success'
+
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: '${{ github.token }}'
+        environment-url: ${{ steps.deployment.outputs.environment_url }}
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+        state: 'failure'
+
 
   delete-deployment:
     if: github.event_name == 'delete'
