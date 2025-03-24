@@ -1,4 +1,4 @@
-aiohttp==3.11.13
+aiohttp==3.11.14
 aiohttp-jinja2==1.6
 uvloop==0.21.0
 gunicorn==23.0.0
